@@ -1,18 +1,30 @@
 import fs from 'fs';
 import path from 'path';
 
-// Minimal DB abstraction: try to use better-sqlite3 if available, otherwise fallback to a JSON file.
+// Minimal DB abstraction: try to use Bun's native SQLite or better-sqlite3 if available, otherwise fallback to a JSON file.
 let useSqlite = false as boolean;
 let sqlite: any = null;
 let db: any = null;
 
 try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  sqlite = require('better-sqlite3');
-  const DB_PATH = process.env.DB_PATH || path.join(process.cwd(), 'data.sqlite');
-  const dir = path.dirname(DB_PATH);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  db = new sqlite(DB_PATH);
+  // Try Bun's native SQLite first (works with Bun runtime)
+  try {
+    const { Database } = require('bun:sqlite');
+    const DB_PATH = process.env.DB_PATH || path.join(process.cwd(), 'data.sqlite');
+    const dir = path.dirname(DB_PATH);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    db = new Database(DB_PATH);
+    console.log('Using Bun native SQLite');
+  } catch {
+    // Fallback to better-sqlite3 (for Node.js runtime)
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    sqlite = require('better-sqlite3');
+    const DB_PATH = process.env.DB_PATH || path.join(process.cwd(), 'data.sqlite');
+    const dir = path.dirname(DB_PATH);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    db = new sqlite(DB_PATH);
+    console.log('Using better-sqlite3');
+  }
   db.prepare(
     `CREATE TABLE IF NOT EXISTS images (
       id TEXT PRIMARY KEY,
