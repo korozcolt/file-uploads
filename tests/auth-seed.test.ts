@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 describe('Auth with DB seed', () => {
   const username = 'ing.korozco@gmail.com';
-  const password = 'PythonDesarrollo2012';
+  const password = process.env.TEST_ADMIN_PASSWORD || require('crypto').randomBytes(12).toString('hex');
   let id: string;
 
   beforeAll(() => {
