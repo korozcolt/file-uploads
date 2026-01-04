@@ -95,9 +95,18 @@ try {
 
   useSqlite = true;
 } catch (err) {
-  // fallback to JSON file
-  const FILE = process.env.DB_PATH || path.join(process.cwd(), 'data.json');
-  if (!fs.existsSync(FILE)) fs.writeFileSync(FILE, JSON.stringify({ images: [], projects: [], users: [] }, null, 2));
+  // fallback to JSON file (robust against non-existent mount paths)
+  let FILE = process.env.DB_PATH || path.join(process.cwd(), 'data.json');
+  try {
+    const dir = path.dirname(FILE);
+    if (dir && !fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(FILE)) fs.writeFileSync(FILE, JSON.stringify({ images: [], projects: [], users: [] }, null, 2));
+  } catch (e) {
+    // if writing to the configured DB_PATH fails (e.g., no mount or permissions), fall back to local data.json
+    FILE = path.join(process.cwd(), 'data.json');
+    if (!fs.existsSync(FILE)) fs.writeFileSync(FILE, JSON.stringify({ images: [], projects: [], users: [] }, null, 2));
+  }
+
   db = {
     file: FILE,
     read() {
@@ -288,6 +297,14 @@ export function deleteProjectRecord(id: string) {
   data.projects = (data.projects || []).filter((p: any) => p.id !== id);
   db.write(data);
   return;
+}
+
+// runtime helpful log
+try {
+  if (!useSqlite) console.log(`DB fallback: using JSON file at ${db.file}`);
+  else console.log('DB backend: sqlite');
+} catch (e) {
+  /* ignore */
 }
 
 export default { insertImage, getImageById, listImages, deleteAllImages, insertProjectRecord, getProjectBySlugRecord, getProjectByIdRecord, listProjectsRecord, deleteProjectRecord, insertUserRecord, getUserByUsernameRecord, getUserByIdRecord, deleteAllUsersRecord };
