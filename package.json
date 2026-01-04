@@ -8,6 +8,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "ts-node-dev --transpile-only --respawn --no-notify src/server.ts",
+    "prestart": "node ./scripts/ensure-dirs.js",
     "start": "node dist/server.js",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",

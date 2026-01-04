@@ -12,7 +12,8 @@ export async function saveImage(projectId: string, file: { buffer: Buffer; origi
   const m = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
   const d = String(dateObj.getUTCDate()).padStart(2, '0');
 
-  const storageDir = path.join(process.cwd(), 'storage', projectId, y, m, d);
+  const storageBase = process.env.STORAGE_PATH || path.join(process.cwd(), 'storage');
+  const storageDir = path.join(storageBase, projectId, y, m, d);
   if (!fs.existsSync(storageDir)) fs.mkdirSync(storageDir, { recursive: true });
   const filepath = path.join(storageDir, filename);
   fs.writeFileSync(filepath, file.buffer);
