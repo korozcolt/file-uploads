@@ -15,6 +15,18 @@ Siguiente pasos: implementar endpoints de upload, validación por proyectos, sig
 
 ---
 
+## Documentación de entrega
+He añadido un documento de entrega y descripción técnica en `DELIVERY.md` que contiene:
+
+- Resumen de funcionalidades y endpoints (auth, projects, upload, images y signed URLs)
+- Esquemas de entrada/salida (resumen y referencia a `src/docs/openapi.json`)
+- Detalles de almacenamiento (filesystem), persistencia (SQLite o JSON fallback)
+- Seguridad y uso de seeds (`scripts/seed-admin.js`)
+- Ejemplos de integración y cURL
+
+Consulta `DELIVERY.md` para todos los detalles de integración y pasos operativos.
+
+
 ## CI / CD (GitHub Actions) ✅
 
 He incluido un workflow de ejemplo en `.github/workflows/ci-cd.yml` con los siguientes comportamientos:
