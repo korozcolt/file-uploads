@@ -1,0 +1,17 @@
+[Unit]
+Description=file-uploads service
+After=network.target
+
+[Service]
+User=www-data
+Environment=NODE_ENV=production
+# Load environment from /opt/file-uploads/.env (should contain PORT, JWT_SECRET, etc.)
+EnvironmentFile=/opt/file-uploads/.env
+WorkingDirectory=/opt/file-uploads
+ExecStart=/usr/bin/env node dist/server.js
+Restart=always
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
