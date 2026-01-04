@@ -16,6 +16,9 @@ dotenv.config();
 
 const app = express();
 
+// Trust proxy headers from nginx/traefik (required for Dokploy deployment)
+app.set('trust proxy', true);
+
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
