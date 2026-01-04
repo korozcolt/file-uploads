@@ -16,8 +16,9 @@ dotenv.config();
 
 const app = express();
 
-// Trust proxy headers from nginx/traefik (required for Dokploy deployment)
-app.set('trust proxy', true);
+// Trust only the first proxy (nginx/traefik from Dokploy)
+// This is more secure than 'true' which trusts all proxies
+app.set('trust proxy', 1);
 
 app.use(helmet());
 app.use(cors());
@@ -26,7 +27,9 @@ app.use(morgan('dev'));
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100
+    max: 100,
+    // Disable validation warning - we trust only 1 proxy level above
+    validate: false
   })
 );
 
